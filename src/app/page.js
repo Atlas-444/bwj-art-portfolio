@@ -261,7 +261,13 @@ export default function Home() {
             className="group cursor-pointer"
             onClick={() => setSelectedIndex(i)}
           >
-            <div className="overflow-hidden bg-neutral-900">
+            <div className="relative overflow-hidden bg-neutral-900">
+              {art.sold && (
+                <div className="absolute top-2 left-2 text-[10px] tracking-widest bg-white text-black px-2 py-1 z-10">
+                  SOLD
+                </div>
+              )}
+              
               <ProtectedImage>
                 <div className="aspect-square flex items-center justify-center">
                   <WatermarkedImage src={art.image_url} />
