@@ -112,6 +112,7 @@ export default function Home() {
       .slice(0, 4);
   };
 
+  // FULLSCREEN
   if (fullscreen && selected) {
     return (
       <div
@@ -125,6 +126,7 @@ export default function Home() {
     );
   }
 
+  // DETAIL VIEW
   if (selected) {
     return (
       <div
@@ -140,39 +142,53 @@ export default function Home() {
           </ProtectedImage>
         </div>
 
-        <h1 className="text-4xl">{selected.title}</h1>
+        <div className="max-w-2xl space-y-5">
+          <h1 className="text-4xl font-bold">{selected.title}</h1>
 
-        {selected.sold ? (
-          <p className="text-red-400 text-sm mt-2">Sold</p>
-        ) : (
-          <p className="text-green-400 text-sm mt-2">Available</p>
-        )}
+          <p className="text-xs opacity-40 tracking-widest">
+            ORIGINAL WORK
+          </p>
 
-        <p>{selected.description}</p>
+          {selected.sold ? (
+            <p className="text-red-400 text-sm">● Sold</p>
+          ) : (
+            <p className="text-green-400 text-sm">
+              ● Available — inquiries open
+            </p>
+          )}
 
-        <p className="opacity-50">
-          {selected.size} • {selected.material} • {selected.color}
-        </p>
+          <p className="opacity-80 leading-relaxed">
+            {selected.description}
+          </p>
 
-        <p className="text-sm opacity-40">
-          Price available on request
-        </p>
+          <p className="opacity-50 text-sm">
+            {selected.size} • {selected.material} • {selected.color}
+          </p>
 
-        <button
-          className="mt-6 border border-white px-4 py-2 hover:bg-white hover:text-black transition"
-          onClick={() =>
-            window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}`
-          }
-        >
-          INQUIRE
-        </button>
+          <p className="text-sm opacity-40">
+            Price available on request
+          </p>
+
+          <div className="pt-4">
+            <button
+              className="bg-white text-black px-6 py-3 text-sm tracking-widest font-semibold hover:scale-105 transition-transform duration-200"
+              onClick={() =>
+                window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}&body=Hi, I'm interested in "${selected.title}". Could you provide more details?`
+              }
+            >
+              INQUIRE ABOUT THIS WORK
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {getRelated().map((art) => (
             <div
               key={art.id}
               onClick={() =>
-                setSelectedIndex(filteredArtworks.indexOf(art))
+                setSelectedIndex(
+                  filteredArtworks.findIndex((a) => a.id === art.id)
+                )
               }
             >
               <ProtectedImage>
@@ -185,9 +201,9 @@ export default function Home() {
     );
   }
 
+  // GALLERY
   return (
     <div className="bg-black text-white min-h-screen pb-20">
-
       {/* HERO */}
       <div className="p-8 md:p-16 border-b border-white/10">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
@@ -200,20 +216,29 @@ export default function Home() {
 
       {/* FILTERS */}
       <div className="p-4 flex flex-wrap gap-2">
-        <select onChange={(e) => setSizeFilter(e.target.value)} className="bg-black border p-2">
+        <select
+          onChange={(e) => setSizeFilter(e.target.value)}
+          className="bg-black border p-2"
+        >
           <option value="">All Sizes</option>
           <option value="small">Small</option>
           <option value="medium">Medium</option>
           <option value="large">Large</option>
         </select>
 
-        <select onChange={(e) => setMaterialFilter(e.target.value)} className="bg-black border p-2">
+        <select
+          onChange={(e) => setMaterialFilter(e.target.value)}
+          className="bg-black border p-2"
+        >
           <option value="">All Materials</option>
           <option value="canvas">Canvas</option>
           <option value="paper">Paper</option>
         </select>
 
-        <select onChange={(e) => setColorFilter(e.target.value)} className="bg-black border p-2">
+        <select
+          onChange={(e) => setColorFilter(e.target.value)}
+          className="bg-black border p-2"
+        >
           <option value="">All Colors</option>
           <option value="black">Black</option>
           <option value="colorful">Colorful</option>
@@ -221,7 +246,7 @@ export default function Home() {
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-2 md:grid-cols-6 auto-rows-[150px] md:auto-rows-[220px] gap-2 p-2 group animate-[fadeIn_0.6s_ease]">
+      <div className="grid grid-cols-2 md:grid-cols-6 auto-rows-[150px] md:auto-rows-[220px] gap-2 p-2 group">
         {filteredArtworks.map((art, i) => {
           const span =
             i % 7 === 0
@@ -257,7 +282,6 @@ export default function Home() {
           );
         })}
       </div>
-
     </div>
   );
 }
