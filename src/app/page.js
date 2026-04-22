@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";s
+import { createClient } from "@supabase/supabase-js";
 
 const IDENTITY = "BWJ - ART";
 
