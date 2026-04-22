@@ -15,7 +15,6 @@ export default function Home() {
   const [materialFilter, setMaterialFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
 
-  // ✅ Client-only Supabase
   const fetchArtworks = async () => {
     if (typeof window === "undefined") return;
 
@@ -137,65 +136,74 @@ export default function Home() {
     );
   }
 
-  // DETAIL VIEW
+  // DETAIL VIEW (premium layout)
   if (selected) {
     return (
       <div
-        className="bg-black text-white min-h-screen p-4 md:p-12 space-y-16"
+        className="bg-black text-white min-h-screen p-6 md:p-16 animate-[fadeIn_0.6s_ease]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <button onClick={() => setSelectedIndex(null)}>← BACK</button>
+        <button
+          onClick={() => setSelectedIndex(null)}
+          className="mb-8 text-sm opacity-50 hover:opacity-100 transition"
+        >
+          ← Back
+        </button>
 
-        <div onClick={() => setFullscreen(true)}>
-          <ProtectedImage>
-            <WatermarkedImage src={selected.image_url} />
-          </ProtectedImage>
-        </div>
+        <div className="grid md:grid-cols-2 gap-12 items-start">
 
-        <div className="max-w-2xl space-y-5">
-          <h1 className="text-4xl font-bold">{selected.title}</h1>
+          {/* IMAGE */}
+          <div onClick={() => setFullscreen(true)} className="cursor-zoom-in">
+            <ProtectedImage>
+              <WatermarkedImage src={selected.image_url} />
+            </ProtectedImage>
+          </div>
 
-          <p className="text-xs opacity-40 tracking-widest">
-            ORIGINAL WORK
-          </p>
+          {/* INFO */}
+          <div className="space-y-6 max-w-md">
 
-          {/* ✅ SOLD only */}
-          {selected.sold && (
-            <p className="text-red-400 text-sm">● Sold</p>
-          )}
+            <div>
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                {selected.title}
+              </h1>
 
-          <p className="opacity-80 leading-relaxed">
-            {selected.description}
-          </p>
+              <p className="text-xs mt-2 opacity-40 tracking-widest">
+                ORIGINAL WORK
+              </p>
+            </div>
 
-          <p className="opacity-50 text-sm">
-            {selected.size} • {selected.material} • {selected.color}
-          </p>
+            {selected.sold && (
+              <p className="text-sm opacity-50">Sold</p>
+            )}
 
-          <p className="text-sm opacity-40">
-            Price available on request
-          </p>
+            <p className="opacity-80 leading-relaxed text-sm">
+              {selected.description}
+            </p>
 
-          {/* ✅ INQUIRE only if NOT sold */}
-          {!selected.sold && (
-            <div className="pt-4">
+            <p className="text-xs opacity-40">
+              {selected.size} • {selected.material} • {selected.color}
+            </p>
+
+            {!selected.sold && (
               <button
-                className="bg-white text-black px-6 py-3 text-sm tracking-widest font-semibold hover:scale-105 transition-transform duration-200"
+                className="mt-4 border border-white px-5 py-2 text-xs tracking-widest hover:bg-white hover:text-black transition"
                 onClick={() =>
-                  window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}&body=Hi, I'm interested in "${selected.title}". Could you provide more details?`
+                  window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}`
                 }
               >
-                INQUIRE ABOUT THIS WORK
+                INQUIRE
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* RELATED */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
           {getRelated().map((art) => (
             <div
               key={art.id}
+              className="cursor-pointer"
               onClick={() =>
                 setSelectedIndex(
                   filteredArtworks.findIndex((a) => a.id === art.id)
@@ -212,9 +220,10 @@ export default function Home() {
     );
   }
 
-  // GALLERY
+  // GALLERY (clean + intentional)
   return (
     <div className="bg-black text-white min-h-screen pb-20">
+
       {/* HERO */}
       <div className="p-8 md:p-16 border-b border-white/10">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
@@ -248,42 +257,28 @@ export default function Home() {
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-2 md:grid-cols-6 auto-rows-[150px] md:auto-rows-[220px] gap-2 p-2 group">
-        {filteredArtworks.map((art, i) => {
-          const span =
-            i % 7 === 0
-              ? "md:col-span-3 md:row-span-2"
-              : i % 5 === 0
-              ? "md:col-span-2 md:row-span-2"
-              : "";
-
-          return (
-            <div
-              key={art.id}
-              className={`relative cursor-pointer overflow-hidden ${span} group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300`}
-              onClick={() => setSelectedIndex(i)}
-            >
-              {art.sold && (
-                <div className="absolute top-2 left-2 text-xs bg-white text-black px-2 py-1 z-10">
-                  SOLD
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 animate-[fadeIn_0.8s_ease]">
+        {filteredArtworks.map((art, i) => (
+          <div
+            key={art.id}
+            className="group cursor-pointer"
+            onClick={() => setSelectedIndex(i)}
+          >
+            <div className="overflow-hidden bg-neutral-900">
+              <ProtectedImage>
+                <div className="aspect-square flex items-center justify-center">
+                  <WatermarkedImage src={art.image_url} />
                 </div>
-              )}
-
-              <div className="absolute bottom-0 left-0 w-full bg-black/60 text-white text-xs p-2 opacity-0 hover:opacity-100 transition z-10">
-                {art.title}
-              </div>
-
-              <div className="h-full w-full hover:scale-[1.05] transition-transform duration-500 flex items-center justify-center">
-                <ProtectedImage>
-                  <div className="opacity-90 hover:opacity-100 transition h-full flex items-center justify-center">
-                    <WatermarkedImage src={art.image_url} />
-                  </div>
-                </ProtectedImage>
-              </div>
+              </ProtectedImage>
             </div>
-          );
-        })}
+
+            <div className="mt-3 text-xs tracking-wide opacity-60 group-hover:opacity-100 transition">
+              {art.title}
+            </div>
+          </div>
+        ))}
       </div>
+
     </div>
   );
 }
