@@ -15,7 +15,7 @@ export default function Home() {
   const [materialFilter, setMaterialFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
 
-  // ✅ SAFE: Supabase only runs in browser
+  // ✅ Client-only Supabase
   const fetchArtworks = async () => {
     if (typeof window === "undefined") return;
 
@@ -160,12 +160,9 @@ export default function Home() {
             ORIGINAL WORK
           </p>
 
-          {selected.sold ? (
+          {/* ✅ SOLD only */}
+          {selected.sold && (
             <p className="text-red-400 text-sm">● Sold</p>
-          ) : (
-            <p className="text-green-400 text-sm">
-              ● Available — inquiries open
-            </p>
           )}
 
           <p className="opacity-80 leading-relaxed">
@@ -180,16 +177,19 @@ export default function Home() {
             Price available on request
           </p>
 
-          <div className="pt-4">
-            <button
-              className="bg-white text-black px-6 py-3 text-sm tracking-widest font-semibold hover:scale-105 transition-transform duration-200"
-              onClick={() =>
-                window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}&body=Hi, I'm interested in "${selected.title}". Could you provide more details?`
-              }
-            >
-              INQUIRE ABOUT THIS WORK
-            </button>
-          </div>
+          {/* ✅ INQUIRE only if NOT sold */}
+          {!selected.sold && (
+            <div className="pt-4">
+              <button
+                className="bg-white text-black px-6 py-3 text-sm tracking-widest font-semibold hover:scale-105 transition-transform duration-200"
+                onClick={() =>
+                  window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}&body=Hi, I'm interested in "${selected.title}". Could you provide more details?`
+                }
+              >
+                INQUIRE ABOUT THIS WORK
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
