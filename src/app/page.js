@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import { createClient } from "@supabase/supabase-js";s
 
 const IDENTITY = "BWJ - ART";
 
@@ -20,12 +15,32 @@ export default function Home() {
   const [materialFilter, setMaterialFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
 
+  const supabase =
+    typeof window !== "undefined"
+      ? createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        )
+      : null;
+
   useEffect(() => {
+  if (supabase) {
     fetchArtworks();
-  }, []);
+  }
+}, [supabase]);
 
   const fetchArtworks = async () => {
-    const { data } = await supabase.from("artworks").select("*");
+    if (!supabase) return;
+
+    const { data, error } = await supabase
+      .from("artworks")
+      .select("*");
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return;
+    }
+
     setArtworks(data || []);
   };
 
