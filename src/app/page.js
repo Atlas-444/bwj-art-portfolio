@@ -23,9 +23,7 @@ export default function Home() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
-    const { data, error } = await supabase
-      .from("artworks")
-      .select("*");
+    const { data, error } = await supabase.from("artworks").select("*");
 
     if (error) {
       console.error("Supabase error:", error);
@@ -89,7 +87,12 @@ export default function Home() {
       };
     };
 
-    return <canvas ref={canvasRef} className="w-full h-auto" />;
+    return (
+      <canvas
+        ref={canvasRef}
+        className="w-full h-auto opacity-0 animate-[fadeIn_0.8s_ease_forwards]"
+      />
+    );
   };
 
   const handleTouchStart = (e) => {
@@ -136,39 +139,37 @@ export default function Home() {
     );
   }
 
-  // DETAIL VIEW (premium layout)
+  // DETAIL VIEW
   if (selected) {
     return (
       <div
-        className="bg-black text-white min-h-screen p-6 md:p-16 animate-[fadeIn_0.6s_ease]"
+        className="bg-black text-white min-h-screen px-6 md:px-16 py-12 animate-[fadeIn_0.6s_ease]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
         <button
           onClick={() => setSelectedIndex(null)}
-          className="mb-8 text-sm opacity-50 hover:opacity-100 transition"
+          className="mb-10 text-sm opacity-50 hover:opacity-100 transition"
         >
           ← Back
         </button>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-16 items-start">
 
-          {/* IMAGE */}
           <div onClick={() => setFullscreen(true)} className="cursor-zoom-in">
             <ProtectedImage>
               <WatermarkedImage src={selected.image_url} />
             </ProtectedImage>
           </div>
 
-          {/* INFO */}
-          <div className="space-y-6 max-w-md">
+          <div className="space-y-8 max-w-lg">
 
             <div>
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
                 {selected.title}
               </h1>
 
-              <p className="text-xs mt-2 opacity-40 tracking-widest">
+              <p className="text-xs mt-3 opacity-40 tracking-widest">
                 ORIGINAL WORK
               </p>
             </div>
@@ -177,7 +178,7 @@ export default function Home() {
               <p className="text-sm opacity-50">Sold</p>
             )}
 
-            <p className="opacity-80 leading-relaxed text-sm">
+            <p className="text-[15px] leading-relaxed opacity-80">
               {selected.description}
             </p>
 
@@ -187,7 +188,7 @@ export default function Home() {
 
             {!selected.sold && (
               <button
-                className="mt-4 border border-white px-5 py-2 text-xs tracking-widest hover:bg-white hover:text-black transition"
+                className="mt-6 border border-white px-5 py-2 text-xs tracking-widest hover:bg-white hover:text-black transition"
                 onClick={() =>
                   window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}`
                 }
@@ -198,8 +199,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* RELATED */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           {getRelated().map((art) => (
             <div
               key={art.id}
@@ -220,11 +220,10 @@ export default function Home() {
     );
   }
 
-  // GALLERY (clean + intentional)
+  // GALLERY
   return (
     <div className="bg-black text-white min-h-screen pb-20">
 
-      {/* HERO */}
       <div className="p-8 md:p-16 border-b border-white/10">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
           {IDENTITY}
@@ -234,7 +233,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* FILTERS */}
       <div className="p-4 flex flex-wrap gap-2">
         <select onChange={(e) => setSizeFilter(e.target.value)} className="bg-black border p-2">
           <option value="">All Sizes</option>
@@ -256,8 +254,7 @@ export default function Home() {
         </select>
       </div>
 
-      {/* GRID */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 animate-[fadeIn_0.8s_ease]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-12 py-10 animate-[fadeIn_0.8s_ease]">
         {filteredArtworks.map((art, i) => (
           <div
             key={art.id}
@@ -272,7 +269,7 @@ export default function Home() {
               </ProtectedImage>
             </div>
 
-            <div className="mt-3 text-xs tracking-wide opacity-60 group-hover:opacity-100 transition">
+            <div className="mt-4 text-xs tracking-wide opacity-60 group-hover:opacity-100 transition">
               {art.title}
             </div>
           </div>
