@@ -15,22 +15,14 @@ export default function Home() {
   const [materialFilter, setMaterialFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
 
-  const supabase =
-    typeof window !== "undefined"
-      ? createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        )
-      : null;
-
-  useEffect(() => {
-  if (supabase) {
-    fetchArtworks();
-  }
-}, [supabase]);
-
+  // ✅ SAFE: Supabase only runs in browser
   const fetchArtworks = async () => {
-    if (!supabase) return;
+    if (typeof window === "undefined") return;
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
 
     const { data, error } = await supabase
       .from("artworks")
@@ -43,6 +35,10 @@ export default function Home() {
 
     setArtworks(data || []);
   };
+
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
 
   const filteredArtworks = artworks.filter((art) => {
     return (
@@ -231,29 +227,20 @@ export default function Home() {
 
       {/* FILTERS */}
       <div className="p-4 flex flex-wrap gap-2">
-        <select
-          onChange={(e) => setSizeFilter(e.target.value)}
-          className="bg-black border p-2"
-        >
+        <select onChange={(e) => setSizeFilter(e.target.value)} className="bg-black border p-2">
           <option value="">All Sizes</option>
           <option value="small">Small</option>
           <option value="medium">Medium</option>
           <option value="large">Large</option>
         </select>
 
-        <select
-          onChange={(e) => setMaterialFilter(e.target.value)}
-          className="bg-black border p-2"
-        >
+        <select onChange={(e) => setMaterialFilter(e.target.value)} className="bg-black border p-2">
           <option value="">All Materials</option>
           <option value="canvas">Canvas</option>
           <option value="paper">Paper</option>
         </select>
 
-        <select
-          onChange={(e) => setColorFilter(e.target.value)}
-          className="bg-black border p-2"
-        >
+        <select onChange={(e) => setColorFilter(e.target.value)} className="bg-black border p-2">
           <option value="">All Colors</option>
           <option value="black">Black</option>
           <option value="colorful">Colorful</option>
