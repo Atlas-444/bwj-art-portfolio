@@ -16,7 +16,6 @@ export default function Home() {
   const [fullscreen, setFullscreen] = useState(false);
   const touchStartX = useRef(null);
 
-  // Filters
   const [sizeFilter, setSizeFilter] = useState("");
   const [materialFilter, setMaterialFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
@@ -41,7 +40,6 @@ export default function Home() {
   const selected =
     selectedIndex !== null ? filteredArtworks[selectedIndex] : null;
 
-  // 🔒 Protected Wrapper
   const ProtectedImage = ({ children }) => (
     <div
       onContextMenu={(e) => e.preventDefault()}
@@ -52,7 +50,6 @@ export default function Home() {
     </div>
   );
 
-  // 🔒 Watermark
   const WatermarkedImage = ({ src }) => {
     const canvasRef = (el) => {
       if (!el || !src) return;
@@ -85,7 +82,6 @@ export default function Home() {
     return <canvas ref={canvasRef} className="w-full h-auto" />;
   };
 
-  // Swipe
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -103,7 +99,6 @@ export default function Home() {
     touchStartX.current = null;
   };
 
-  // Related
   const getRelated = () => {
     if (!selected) return [];
 
@@ -117,7 +112,6 @@ export default function Home() {
       .slice(0, 4);
   };
 
-  // Fullscreen
   if (fullscreen && selected) {
     return (
       <div
@@ -131,7 +125,6 @@ export default function Home() {
     );
   }
 
-  // Detail
   if (selected) {
     return (
       <div
@@ -148,11 +141,31 @@ export default function Home() {
         </div>
 
         <h1 className="text-4xl">{selected.title}</h1>
+
+        {selected.sold ? (
+          <p className="text-red-400 text-sm mt-2">Sold</p>
+        ) : (
+          <p className="text-green-400 text-sm mt-2">Available</p>
+        )}
+
         <p>{selected.description}</p>
 
         <p className="opacity-50">
           {selected.size} • {selected.material} • {selected.color}
         </p>
+
+        <p className="text-sm opacity-40">
+          Price available on request
+        </p>
+
+        <button
+          className="mt-6 border border-white px-4 py-2 hover:bg-white hover:text-black transition"
+          onClick={() =>
+            window.location.href = `mailto:bwj.4rt@gmail.com?subject=Inquiry about ${selected.title}`
+          }
+        >
+          INQUIRE
+        </button>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {getRelated().map((art) => (
@@ -172,12 +185,20 @@ export default function Home() {
     );
   }
 
-  // Gallery
   return (
-    <div className="bg-black text-white min-h-screen">
-      <div className="p-4 text-lg tracking-widest">{IDENTITY}</div>
+    <div className="bg-black text-white min-h-screen pb-20">
 
-      {/* Filters */}
+      {/* HERO */}
+      <div className="p-8 md:p-16 border-b border-white/10">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+          {IDENTITY}
+        </h1>
+        <p className="mt-4 opacity-60 max-w-xl text-sm md:text-base leading-relaxed">
+          A curated collection of original works exploring form, material, and quiet tension.
+        </p>
+      </div>
+
+      {/* FILTERS */}
       <div className="p-4 flex flex-wrap gap-2">
         <select onChange={(e) => setSizeFilter(e.target.value)} className="bg-black border p-2">
           <option value="">All Sizes</option>
@@ -199,20 +220,44 @@ export default function Home() {
         </select>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
-        {filteredArtworks.map((art, i) => (
-          <div
-            key={art.id}
-            className="cursor-pointer"
-            onClick={() => setSelectedIndex(i)}
-          >
-            <ProtectedImage>
-              <WatermarkedImage src={art.image_url} />
-            </ProtectedImage>
-          </div>
-        ))}
+      {/* GRID */}
+      <div className="grid grid-cols-2 md:grid-cols-6 auto-rows-[150px] md:auto-rows-[220px] gap-2 p-2 group animate-[fadeIn_0.6s_ease]">
+        {filteredArtworks.map((art, i) => {
+          const span =
+            i % 7 === 0
+              ? "md:col-span-3 md:row-span-2"
+              : i % 5 === 0
+              ? "md:col-span-2 md:row-span-2"
+              : "";
+
+          return (
+            <div
+              key={art.id}
+              className={`relative cursor-pointer overflow-hidden ${span} group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300`}
+              onClick={() => setSelectedIndex(i)}
+            >
+              {art.sold && (
+                <div className="absolute top-2 left-2 text-xs bg-white text-black px-2 py-1 z-10">
+                  SOLD
+                </div>
+              )}
+
+              <div className="absolute bottom-0 left-0 w-full bg-black/60 text-white text-xs p-2 opacity-0 hover:opacity-100 transition z-10">
+                {art.title}
+              </div>
+
+              <div className="h-full w-full hover:scale-[1.05] transition-transform duration-500 flex items-center justify-center">
+                <ProtectedImage>
+                  <div className="opacity-90 hover:opacity-100 transition h-full flex items-center justify-center">
+                    <WatermarkedImage src={art.image_url} />
+                  </div>
+                </ProtectedImage>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 }
